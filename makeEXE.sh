@@ -6,6 +6,7 @@
 
 mkdir -p build
 cd build
+rm -fr *.app *dmg
 
 #
 # conan install
@@ -52,4 +53,3 @@ else
     #
     echo "No Examples Copied"
 fi
-
