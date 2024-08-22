@@ -7,17 +7,17 @@
 #include <QFile>
 #include <QThread>
 #include <QObject>
-
-#include <AgaveCurl.h>
-#include <WorkflowAppPBE.h>
-
 #include <QTime>
 #include <QTextStream>
-#include <GoogleAnalytics.h>
 #include <QDir>
 #include <QStandardPaths>
 #include <QProcessEnvironment>
 #include <QWebEngineView>
+
+#include <WorkflowAppPBE.h>
+#include <TapisV3.h>
+#include <GoogleAnalytics.h>
+
 
  // customMessgaeOutput code from web:
  // https://stackoverflow.com/questions/4954140/how-to-redirect-qdebug-qwarning-qcritical-etc-output
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     //Setting Core Application Name, Organization and Version
     QCoreApplication::setApplicationName("PBE");
     QCoreApplication::setOrganizationName("SimCenter");
-    QCoreApplication::setApplicationVersion("3.5.0");
+    QCoreApplication::setApplicationVersion("4.0.0");
 
 #ifdef Q_OS_WIN
     QApplication::setAttribute(Qt::AA_UseOpenGLES);
@@ -111,15 +111,17 @@ int main(int argc, char *argv[])
   //
 
   QString tenant("designsafe");
-  QString storage("agave://designsafe.storage.default/");
+  //QString storage("agave://designsafe.storage.default/");
+  QString storage("designsafe.storage.default/");  
   QString dirName("PBE");
 
-  AgaveCurl *theRemoteService = new AgaveCurl(tenant, storage, &dirName);
-
+  //AgaveCurl *theRemoteService = new AgaveCurl(tenant, storage, &dirName);
+  TapisV3 *theRemoteService = new TapisV3(tenant, storage, &dirName);  
 
   //
   // create the main window
   //
+  
   //WorkflowAppWidget *theInputApp = new WorkflowAppPBE(theRemoteService);
   WorkflowAppWidget *theInputApp = WorkflowAppPBE::getInstance(theRemoteService);
   MainWindowWorkflowApp mainWindow(
@@ -135,14 +137,15 @@ int main(int argc, char *argv[])
 
   mainWindow.setVersion(version);
 
-  QString citeText("Adam Zsarnoczay, Frank McKenna, Kuanshi Zhong, Michael Gardner, Charles Wang, Sang-ri Yi, Aakash Bangalore Satish, & Wael Elhaddad. (2024). NHERI-SimCenter/PBE: Version 3.5.0 (v3.5.0). Zenodo. https://doi.org/10.5281/zenodo.12599938 \n\n2) Gregory G. Deierlein, Frank McKenna, Adam Zsarnóczay, Tracy Kijewski-Correa, Ahsan Kareem, Wael Elhaddad, Laura Lowes, Matthew J. Schoettler, and Sanjay Govindjee (2020) A Cloud-Enabled Application Framework for Simulating Regional-Scale Impacts of Natural Hazards on the Built Environment. Frontiers in the Built Environment. 6:558706. doi: 10.3389/fbuil.2020.558706");
+  QString citeText("Adam Zsarnoczay, Frank McKenna, Kuanshi Zhong, Michael Gardner, Charles Wang, Sang-ri Yi, Aakash Bangalore Satish, Amin Pakzad, & Wael Elhaddad. (2024). NHERI-SimCenter/EE-UQ: Version 4.0.0 (v4.0.0). Zenodo. https://doi.org/10.5281/zenodo.13324153 \n\n2) Gregory G. Deierlein, Frank McKenna, Adam Zsarnóczay, Tracy Kijewski-Correa, Ahsan Kareem, Wael Elhaddad, Laura Lowes, Matthew J. Schoettler, and Sanjay Govindjee (2020) A Cloud-Enabled Application Framework for Simulating Regional-Scale Impacts of Natural Hazards on the Built Environment. Frontiers in the Built Environment. 6:558706. doi: 10.3389/fbuil.2020.558706");
 
   mainWindow.setCite(citeText);
 
   QString manualURL("https://nheri-simcenter.github.io/PBE-Documentation/");
   mainWindow.setDocumentationURL(manualURL);
 
-  QString messageBoardURL("https://simcenter-messageboard.designsafe-ci.org/smf/index.php?board=7.0");
+  //QString messageBoardURL("https://simcenter-messageboard.designsafe-ci.org/smf/index.php?board=7.0");
+  QString messageBoardURL("https://github.com/orgs/NHERI-SimCenter/discussions/categories/pbe");  
   mainWindow.setFeedbackURL(messageBoardURL);
 
   //
