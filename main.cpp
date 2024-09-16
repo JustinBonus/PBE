@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     //Setting Core Application Name, Organization and Version
     QCoreApplication::setApplicationName("PBE");
     QCoreApplication::setOrganizationName("SimCenter");
-    QCoreApplication::setApplicationVersion("4.0.1");
+    QCoreApplication::setApplicationVersion("4.0.2");
 
 #ifdef Q_OS_WIN
     QApplication::setAttribute(Qt::AA_UseOpenGLES);
@@ -195,7 +195,8 @@ int main(int argc, char *argv[])
   }
 
   //Setting Google Analytics Tracking Information
-  /* **************************************************************
+#ifdef _SC_RELEASE
+
   GoogleAnalytics::SetMeasurementId("G-JWNPJMZVTK");
   GoogleAnalytics::SetAPISecret("CL5znZLfQv6N2Tk1RJVMWg");
   GoogleAnalytics::CreateSessionId();
@@ -208,7 +209,8 @@ int main(int argc, char *argv[])
   view.resize(1024, 750);
   view.show();
   view.hide();
-  ******************************************************************* */
+
+#endif
 
 
   //
