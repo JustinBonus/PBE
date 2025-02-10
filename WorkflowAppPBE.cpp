@@ -63,6 +63,7 @@ UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QDir>
 #include <QFile>
 #include <RemoteService.h>
+#include <Stampede3Machine.h>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
@@ -138,17 +139,13 @@ WorkflowAppPBE::WorkflowAppPBE(RemoteService *theService, QWidget *parent)
     thePrfMethodSelection = new PerformanceMethodSelection();
     theResults = new ResultsPelicun();
 
+    TapisMachine *theMachine = new Stampede3Machine();
+    
     localApp = new LocalApplication("sWHALE.py");
-    remoteApp = new RemoteApplication("sWHALE.py", theService);
-    //    localApp = new LocalApplication("femUQ.py");
-    //    remoteApp = new RemoteApplication("femUQ.py", theService);
+    remoteApp = new RemoteApplication("sWHALE.py", theService, theMachine);
     theJobManager = new RemoteJobManager(theService);
 
-    // theRunLocalWidget = new RunLocalWidget(theUQ_Method);
     SimCenterWidget *theWidgets[1];
-    //    theWidgets[0] = theAnalysis;
-    //    theWidgets[1] = theUQ_Method;
-    //int numWidgets = 2;
     theRunWidget = new RunWidget(localApp, remoteApp, theWidgets, 0);
 
     //
@@ -163,7 +160,8 @@ WorkflowAppPBE::WorkflowAppPBE(RemoteService *theService, QWidget *parent)
 	    this,SLOT(statusMessage(QString)));
     connect(localApp,SIGNAL(sendFatalMessage(QString)),
 	    this,SLOT(fatalMessage(QString)));
-    connect(localApp,SIGNAL(runComplete()), this, SLOT(runComplete()));        
+    connect(localApp,SIGNAL(runComplete()),
+	    this, SLOT(runComplete()));        
     connect(localApp, SIGNAL(processResults(QString &)),
             this, SLOT(processResults(QString &)));
     
@@ -171,31 +169,34 @@ WorkflowAppPBE::WorkflowAppPBE(RemoteService *theService, QWidget *parent)
             this, SLOT(setUpForApplicationRun(QString &,QString &)));
     connect(remoteApp,SIGNAL(successfullJobStart()),
 	    this, SLOT(runComplete()));
+    connect(remoteApp,SIGNAL(successfullJobStart()), theRunWidget, SLOT(hide()));
+    
     connect(remoteApp,SIGNAL(sendErrorMessage(QString)),
 	    this,SLOT(errorMessage(QString)));
     connect(remoteApp,SIGNAL(sendStatusMessage(QString)),
 	    this,SLOT(statusMessage(QString)));
     connect(remoteApp,SIGNAL(sendFatalMessage(QString)),
 	    this,SLOT(fatalMessage(QString)));    
-    
-    connect(this, SIGNAL(setUpForApplicationRunDone(QString&, QString &)), 
-            theRunWidget, SLOT(setupForRunApplicationDone(QString&, QString &)));
 
-    connect(theService, SIGNAL(closeDialog()), this, SLOT(runComplete()));
-    
-    connect(theJobManager, SIGNAL(closeDialog()), this, SLOT(runComplete()));
-    connect(theJobManager,
-            SIGNAL(processResults(QString &)),
-            this,
-            SLOT(processResults(QString &)));
-    
-    connect(theJobManager,SIGNAL(loadFile(QString&)), this, SLOT(loadFile(QString&)));
+    connect(theJobManager, SIGNAL(closeDialog()),
+	    this, SLOT(runComplete()));
+    connect(theJobManager,SIGNAL(processResults(QString &)),
+            this, SLOT(processResults(QString &)));
+    connect(theJobManager,SIGNAL(loadFile(QString&)),
+	    this, SLOT(loadFile(QString&)));
+    connect(theJobManager,SIGNAL(sendErrorMessage(QString)),
+	    this,SLOT(errorMessage(QString)));
+    connect(theJobManager,SIGNAL(sendStatusMessage(QString)),
+	    this,SLOT(statusMessage(QString)));
+    connect(theJobManager,SIGNAL(sendFatalMessage(QString)),
+	    this,SLOT(fatalMessage(QString)));        
 
-    //connect(theJobManager,SIGNAL(sendErrorMessage(QString)), this,SLOT(errorMessage(QString)));
-    // connect(theJobManager,SIGNAL(sendStatusMessage(QString)), this,SLOT(statusMessage(QString)));    
+    connect(this,SIGNAL(setUpForApplicationRunDone(QString&, QString &)),
+	    theRunWidget, SLOT(setupForRunApplicationDone(QString&, QString &)));
     
-    connect(remoteApp,SIGNAL(successfullJobStart()), theRunWidget, SLOT(hide()));
-
+    connect(theService, SIGNAL(closeDialog()),
+	    this, SLOT(runComplete()));
+    
     // SY connect queryEVT and the reply
     connect(theUQ_Selection, SIGNAL(queryEVT()), theEventSelection, SLOT(replyEventType()));
     connect(theEventSelection, SIGNAL(typeEVT(QString)), theUQ_Selection, SLOT(setEventType(QString)));
@@ -800,7 +801,7 @@ WorkflowAppPBE::createCitation(QJsonObject &citation, QString citeFile) {
 
   QJsonObject citationPBE;
   citationPBE.insert("citation",
-		     "Adam Zsarnoczay, Frank McKenna, Michael Gardner, Michael Gardner, Charles Wang, Sang-ri Yi, Aakash Bangalore Satish, Amin Pakzad, & Wael Elhaddad. (2024). NHERI-SimCenter/PBE: Version 4.1.0 (v4.1.0). Zenodo. https://doi.org/10.5281/zenodo.13865401");
+		     "Adam Zsarnoczay, Frank McKenna, Sang-ri Yi, Aakash Bangalore Satish, Michael Gardner, Charles Wang, Amin Pakzad, Barbaros Cetiner, & Wael Elhaddad. (2025). NHERI-SimCenter/PBE: Version 4.2.0 (v4.2.0). Zenodo. https://doi.org/10.5281/zenodo.14807364");
   citationPBE.insert("description",
 		     "This is the overall tool reference used to indicate the version of the tool.");
 

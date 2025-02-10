@@ -1,5 +1,7 @@
 #!/bin/bash 
 
+release=${1:-"NO_RELEASE"}
+
 #
 # create build dir if does not exist, cd to build, conan install and then qmake
 # 
@@ -13,35 +15,43 @@ rm -fr *.app *dmg
 #
 
 conan install .. --build missing
-status=$?
-if [[ $status != 0 ]]
+cmd_status=$?
+if [[ $cmd_status != 0 ]]
 then
     echo "PBE: conan install failed";
-    exit $status;
+    exit $cmd_status;
 fi
 
 #
 # qmake
 #
 
-qmake ../PBE.pro
-status=$?
-if [[ $status != 0 ]]
+if [ -n "$release" ] && [ "$release" = "release" ]; then
+    echo "******** RELEASE BUILD *************"    
+    qmake QMAKE_CXXFLAGS+=-D_SC_RELEASE ../PBE.pro
+else
+    echo "********* NON RELEASE BUILD ********"
+    qmake ../PBE.pro
+fi
+
+cmd_status=$?
+if [[ $cmd_status != 0 ]]
 then
     echo "PBE: qmake failed";
-    exit $status;
+    exit $cmd_status;
 fi
 
 #
 # make
 #
 
-make
-status=$?;
-if [[ $status != 0 ]]
+touch ../WorkflowAppPBE.cpp
+make -j 4
+cmd_status=$?;
+if [[ $cmd_status != 0 ]]
 then
     echo "PBE: make failed";
-    exit $status;
+    exit $cmd_status;
 fi
 
 # copy examples

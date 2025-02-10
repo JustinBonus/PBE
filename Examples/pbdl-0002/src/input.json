@@ -1,7 +1,7 @@
 {
     "Applications": {
         "DL": {
-            "Application": "Pelicun",
+            "Application": "Pelicun3",
             "ApplicationData": {
             }
         },
@@ -15,7 +15,7 @@
                 "Application": "StochasticGroundMotion",
                 "ApplicationData": {
                     "modelName": "VlachosSiteSpecificEQ",
-                    "seed": 500
+                    "seed": "RV.StochasticSeed"
                 },
                 "EventClassification": "Earthquake"
             }
@@ -63,7 +63,7 @@
             "SampleSize": "500"
         },
         "Losses": {
-            "BldgRepair": {
+            "Repair": {
                 "ConsequenceDatabase": "Hazus Earthquake - Buildings",
                 "DecisionVariables": {
                     "Carbon": false,
@@ -94,7 +94,7 @@
                 "JSON": false
             },
             "Loss": {
-                "BldgRepair": {
+                "Repair": {
                     "AggregateSample": true,
                     "AggregateStatistics": true,
                     "GroupedSample": true,
@@ -133,7 +133,8 @@
             "modelName": "Vlachos et al. (2018)",
             "momentMagnitude": 7,
             "ruptureDist": 40,
-            "seed": 500,
+	    "protectModel": true,	    
+            "seed": "RV.StochasticSeed",
             "type": "StochasticMotion",
             "vs30": "RV.vs"
         }

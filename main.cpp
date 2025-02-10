@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     //Setting Core Application Name, Organization and Version
     QCoreApplication::setApplicationName("PBE");
     QCoreApplication::setOrganizationName("SimCenter");
-    QCoreApplication::setApplicationVersion("4.1.0");
+    QCoreApplication::setApplicationVersion("4.2.0");
 
 #ifdef Q_OS_WIN
     QApplication::setAttribute(Qt::AA_UseOpenGLES);
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
   mainWindow.setVersion(version);
 
-  QString citeText("Adam Zsarnoczay, Frank McKenna, Michael Gardner, Michael Gardner, Charles Wang, Sang-ri Yi, Aakash Bangalore Satish, Amin Pakzad, & Wael Elhaddad. (2024). NHERI-SimCenter/PBE: Version 4.1.0 (v4.1.0). Zenodo. https://doi.org/10.5281/zenodo.13865401 \n\n2) Gregory G. Deierlein, Frank McKenna, Adam Zsarnóczay, Tracy Kijewski-Correa, Ahsan Kareem, Wael Elhaddad, Laura Lowes, Matthew J. Schoettler, and Sanjay Govindjee (2020) A Cloud-Enabled Application Framework for Simulating Regional-Scale Impacts of Natural Hazards on the Built Environment. Frontiers in the Built Environment. 6:558706. doi: 10.3389/fbuil.2020.558706");
+  QString citeText("Adam Zsarnoczay, Frank McKenna, Sang-ri Yi, Aakash Bangalore Satish, Michael Gardner, Charles Wang, Amin Pakzad, Barbaros Cetiner, & Wael Elhaddad. (2025). NHERI-SimCenter/PBE: Version 4.2.0 (v4.2.0). Zenodo. https://doi.org/10.5281/zenodo.14807364 \n\n2) Gregory G. Deierlein, Frank McKenna, Adam Zsarnóczay, Tracy Kijewski-Correa, Ahsan Kareem, Wael Elhaddad, Laura Lowes, Matthew J. Schoettler, and Sanjay Govindjee (2020) A Cloud-Enabled Application Framework for Simulating Regional-Scale Impacts of Natural Hazards on the Built Environment. Frontiers in the Built Environment. 6:558706. doi: 10.3389/fbuil.2020.558706");
 
   mainWindow.setCite(citeText);
 
@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
   //Setting Google Analytics Tracking Information
 #ifdef _SC_RELEASE
 
+  qDebug() << "Running a Release Version of PBE";  
   GoogleAnalytics::SetMeasurementId("G-JWNPJMZVTK");
   GoogleAnalytics::SetAPISecret("CL5znZLfQv6N2Tk1RJVMWg");
   GoogleAnalytics::CreateSessionId();
@@ -212,6 +213,16 @@ int main(int argc, char *argv[])
 
 #endif
 
+#ifdef _ANALYTICS
+
+  qDebug() << "compiled with: ANALYTICS";  
+  GoogleAnalytics::SetMeasurementId("G-JWNPJMZVTK");
+  GoogleAnalytics::SetAPISecret("CL5znZLfQv6N2Tk1RJVMWg");
+  GoogleAnalytics::CreateSessionId();
+  GoogleAnalytics::StartSession();
+
+#endif  
+
 
   //
   // RUN the GUI
@@ -219,6 +230,18 @@ int main(int argc, char *argv[])
   
   int res = a.exec();
 
+#ifdef _GA_AFTER
+
+  qDebug() << "compiled with: _GA_AFTER";
+  // Opening a QWebEngineView and using github to get app geographic usage
+  QWebEngineView view;
+  view.setUrl(QUrl("https://nheri-simcenter.github.io/PBE/GA4.html"));
+  view.resize(1024, 750);
+  view.show();
+  view.hide();
+
+#endif
+  
   //
   // on done with event loop, logout & stop the thread
   //
